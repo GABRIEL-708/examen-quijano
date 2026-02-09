@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>📘 Examen Ciberseguridad</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background:#f2f4f7;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.container {
+    background:white;
+    width:700px;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 3px 10px rgba(0,0,0,.15);
+}
+h1 { text-align:center; }
+.question { margin-bottom:15px; font-weight:bold; }
+.options label { display:block; margin:8px 0; cursor:pointer; }
+.result { margin-top:10px; font-weight:bold; }
+.correct { color:green; }
+.incorrect { color:red; }
+button {
+    margin-top:15px;
+    padding:10px 15px;
+    border:none;
+    border-radius:6px;
+    background:#007bff;
+    color:white;
+    cursor:pointer;
+}
+button:disabled { background:gray; }
+.progress {
+    text-align:right;
+    font-size:14px;
+    color:#666;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📘 Examen Combinado</h1>
+    <div class="progress" id="progress"></div>
+    <div id="question" class="question"></div>
+    <div id="options" class="options"></div>
+    <div id="result" class="result"></div>
+    <button id="nextBtn" onclick="nextQuestion()" disabled>Siguiente</button>
+</div>
+
+<script>
+
+const questions = [
+{
+q:`En ciberseguridad, esto significa otorgar a los usuarios y sistemas el nivel mínimo de acceso necesario para realizar sus funciones. Al restringir los permisos, se limita el daño potencial en caso de una brecha de seguridad.`,
+options:["Seguridad por diseño","Shift-left","Defensa en profundidad","El Principio del Mínimo Privilegio"],
+correct:3
+},
+{
+q:`Esta estrategia implica implementar varias capas de mecanismos de defensa para protegerse contra amenazas. Si una capa se ve comprometida, las otras capas continúan brindando protección.`,
+options:["El Principio del Mínimo Privilegio","Seguridad por diseño","Defensa en profundidad","Shift-left"],
+correct:2
+},
+{
+q:`Es la presencia de uno o más factores de diversa índole que de ocurrir atacarían al sistema aprovechando el nivel de vulnerabilidad detectado o no previamente.`,
+options:["Amenaza","Ataque","Impacto","Riesgo"],
+correct:0
+},
+{
+q:`Es un proceso continuo, proactivo y a menudo automático que protege los equipos, redes y aplicaciones empresariales de ciberataques y vulneraciones de datos.`,
+options:["Ciclo de desarrollo de software","Gestión de vulnerabilidades","Modelos de desarrollo de software","Shift-left"],
+correct:1
+},
+{
+q:`Revisa el código fuente sin ejecutarlo.`,
+options:["SAST","Pen testing","SCA","DAST"],
+correct:0
+},
+{
+q:`Intentos controlados de explotación para controlar debilidades o vulnerabilidades.`,
+options:["SAST","SCA","Pen testing","DAST"],
+correct:2
+},
+{
+q:`Es una persona con las habilidades técnicas necesarias para comprometer una red o sistema informático.`,
+options:["Ciberdelincuente","Estados-nación","Hacker","Amenazas-internas"],
+correct:2
+},
+{
+q:`… y los gobiernos con frecuencia financian a actores de amenazas con el objetivo de robar datos sensibles, recopilar información confidencial o interrumpir la infraestructura crítica de otro gobierno.`,
+options:["Amenazas-internas","Estados-nación","Ciberdelincuente","Hacker"],
+correct:1
+},
+{
+q:`Esta vulnerabilidad permite a un atacante inyectar código JavaScript malicioso en un sitio web para robar datos de los usuarios o realizar otras acciones maliciosas.`,
+options:["Cross-site-scripting","Entradas no validadas","Credenciales no seguras","Ejecución remota de código"],
+correct:0
+},
+{
+q:`Esta vulnerabilidad se produce cuando los datos confidenciales, como nombres de usuario y contraseñas, se almacenan sin seguridad.`,
+options:["Cross-site-scripting","Ejecución remota de código","Credenciales no seguras","Entradas no validadas"],
+correct:2
+},
+{
+q:`El uso de software obsoleto o sistemas operativos desactualizados.`,
+options:[
+"Puede ser una brecha significativa en las defensas de una empresa",
+"Puede dejar a las empresas expuestas a ataques aprovechando vulnerabilidades conocidas",
+"Promueve integrar seguridad en etapas tempranas del SDLC",
+"Uso de ingeniería social"
+],
+correct:1
+},
+{
+q:`El concepto … domina las conversaciones sobre Desarrollo de Software Seguro y promueve integrar seguridad en las etapas más tempranas del SDLC.`,
+options:["Shift-left","Zero-trust","IA y seguridad","DevSecOps"],
+correct:0
+},
+{
+q:`Etapa que busca asegurar los procesos de CI/CD para evitar alteraciones no autorizadas.`,
+options:["Ejecución","Zero trust","Diseño","Compilación y despliegue"],
+correct:3
+},
+{
+q:`Etapa que sugiere prevenir que la escritura de código permita acciones no autorizadas.`,
+options:["Diseño","Ejecución","Zero trust","Código o codificación"],
+correct:3
+},
+{
+q:`Etapa para aplicar las mejores prácticas de seguridad en el entorno de ejecución.`,
+options:["Diseño","Zero trust","Compilación y despliegue","Ejecución"],
+correct:3
+},
+{
+q:`Decide si la siguiente frase es una práctica o una etapa: “Realizar pruebas de seguridad”.`,
+options:["Práctica","Etapa"],
+correct:0
+},
+{
+q:`¿Cuántas prácticas seguras incluye el SDL de Microsoft?`,
+options:["15","0","4","10"],
+correct:3
+},
+{
+q:`¿Cuántas y cuáles prácticas incluye el Ciclo de Vida de Desarrollo de Software Seguro?`,
+options:[
+"Planeación y requisitos, arquitectura y diseño seguro, desarrollo seguro, pruebas, lanzamiento e implementación, mantenimiento",
+"Plan, code, build, test",
+"Plan, design, build",
+"Diseño, código, ejecución"
+],
+correct:0
+},
+{
+q:`No solo benefician al medio ambiente, también reducen superficies de ataque al minimizar complejidad innecesaria.`,
+options:["Integración entre IA y seguridad","Educación continua","Zero-trust","Eficiencia energética y código optimizado"],
+correct:3
+}
+];
+
+// 🔥 FUNCION PARA MEZCLAR PREGUNTAS
+function shuffle(array){
+    for(let i=array.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [array[i],array[j]]=[array[j],array[i]];
+    }
+}
+
+shuffle(questions); // ← Aquí se mezclan
+
+let current = 0;
+let answered = false;
+
+function loadQuestion(){
+    answered=false;
+    document.getElementById("result").innerHTML="";
+    document.getElementById("nextBtn").disabled=true;
+
+    document.getElementById("progress").innerText =
+        `Pregunta ${current+1} de ${questions.length}`;
+
+    document.getElementById("question").innerText =
+        `${questions[current].q}`;
+
+    const optionsDiv=document.getElementById("options");
+    optionsDiv.innerHTML="";
+
+    questions[current].options.forEach((opt,i)=>{
+        const label=document.createElement("label");
+        label.innerHTML=`<input type="radio" onclick="checkAnswer(${i})"> ${opt}`;
+        optionsDiv.appendChild(label);
+    });
+}
+
+function checkAnswer(selected){
+    if(answered) return;
+    answered=true;
+
+    const result=document.getElementById("result");
+    const correct=questions[current].correct;
+
+    if(selected===correct){
+        result.innerHTML="✅ Correcto";
+        result.className="result correct";
+    } else {
+        result.innerHTML=`❌ Incorrecto. Respuesta correcta: <u>${questions[current].options[correct]}</u>`;
+        result.className="result incorrect";
+    }
+
+    document.getElementById("nextBtn").disabled=false;
+}
+
+function nextQuestion(){
+    current++;
+    if(current<questions.length){
+        loadQuestion();
+    } else {
+        document.querySelector(".container").innerHTML=
+        "<h1>🎉 Terminaste el examen</h1><p style='text-align:center;'>Vuelve a abrir la página para nuevo orden aleatorio 🔥</p>";
+    }
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
